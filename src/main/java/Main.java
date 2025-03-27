@@ -5,34 +5,30 @@ public class Main {
     public static void main(String[] args) throws Exception {
 
         Scanner scanner = new Scanner(System.in);
-        String input, typeSubString;
+        String input, typeSubstring;
         String[] commands = {"echo", "exit", "type"};
 
-        while(true){
+        while (true) {
             System.out.print("$ ");
 
-            input =scanner.nextLine();
+            input = scanner.nextLine();
 
-            if(input.equals("exit 0")){
+            if (input.equals("exit 0")) {
                 break;
-            }
-            else if(input.startsWith("echo ")){
-                System.out.println(input.subString(5));
-            }
-            else if(input.startsWith("type ")){
-                typeSubString = input.subString(5);
-                if (Arrays.asList(commands).contains(typeSubstring)) {
+            } else if (input.startsWith("echo")) {
+                System.out.println(input.substring(5));  // Fixed: changed subString to substring
+            } else if (input.startsWith("type")) {
+                typeSubstring = input.substring(5);  // Fixed: changed subString to substring
+                if (Arrays.asList(commands).contains(typeSubstring)) {  // Fixed: Corrected variable name
                     System.out.println(typeSubstring + " is a shell builtin");
-                }
-                else {
+                } else {
                     System.out.println(typeSubstring + " not found");
                 }
-            }
-            else{
+            } else {
                 System.out.println(input + ": command not found");
             }
-
         }
+
+        scanner.close();  // Closing scanner to avoid resource leak
     }
-    //scanner.close();
 }
