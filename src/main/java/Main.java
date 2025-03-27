@@ -41,13 +41,11 @@ public class Main {
                     System.out.println(parameter);
                     break;
                 case "type":
-                    if(parameter.equals(builtins.get(0)) ||
-                            parameter.equals(builtins.get(1)) ||
-                            parameter.equals(builtins.get(2))) {
+                    if (builtins.contains(parameter)) {
                         System.out.println(parameter + " is a shell builtin");
                     } else {
                         String path = getPath(parameter);
-                        if(path != null) {
+                        if (path != null) {
                             System.out.println(parameter + " is " + path);
                         } else {
                             System.out.println(parameter + ": not found");
