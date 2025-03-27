@@ -86,7 +86,10 @@ public class Main {
                 default:
                     String path = getPath(command);
                     if (path != null) {
-                        ProcessBuilder processBuilder = new ProcessBuilder(tokens);
+                        String[] fullPath = new String[tokens.size()];
+                        fullPath[0] = command;
+                        System.arraycopy(arguments, 0, fullPath, 1, arguments.length);
+                        ProcessBuilder processBuilder = new ProcessBuilder(fullPath);
                         processBuilder.directory(new File(dir));
                         processBuilder.environment().putAll(System.getenv());
                         Process process = processBuilder.start();
