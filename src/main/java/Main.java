@@ -44,7 +44,9 @@ public class Main {
                     System.out.println(parameter);
                     break;
                 case "type":
-                    if (parameter.equals(builtins(get(0)) || parameter.equals(builtins.get(1)) || parameter.equals(builtins.get(2)))) {
+                    if (parameter.equals(builtins.get(0)) ||
+                            parameter.equals(builtins.get(1)) ||
+                            parameter.equals(builtins.get(2))) {
                         System.out.println(parameter + ": is a shell builtin");
                     } else {
                         String path = getPath(parameter);
@@ -62,9 +64,9 @@ public class Main {
     }
 
     private static String getPath(String parameter){
-        for(String path :System.getenv("PATH").split(":")){
-            Path fullPath = Path.og(path, parameter);
-            if(Files.isRegularFile(fullPath)){
+        for (String path : System.getenv("PATH").split(":")) {
+            Path fullPath = Path.of(path, parameter);  // FIXED: Changed Path.og(...) to Path.of(...)
+            if (Files.isRegularFile(fullPath)) {
                 return fullPath.toString();
             }
         }
@@ -78,6 +80,4 @@ public class Main {
         builtins.add("type");
         return builtins;
     }
-
-
 }
