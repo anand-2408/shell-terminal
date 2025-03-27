@@ -14,7 +14,7 @@ public class Main {
             if(input.equals("exit 0")){
                 break;
             }
-            else if(input.startsWith("echo")){
+            else if(input.startsWith("echo ")){
                 System.out.println(input.subString(input.indexOf("echo ")+5));
             }
             else{
