@@ -70,13 +70,17 @@ public class Main {
                     String path = getPath(command);
                     if (path != null) {
                         String[] fullPath = new String[tokens.size()];
-                        fullPath[0] = path;
+                        fullPath[0] = command;  // Pass only the command name, not the full path
                         System.arraycopy(arguments, 0, fullPath, 1, arguments.length);
-                        Process process = Runtime.getRuntime().exec(fullPath);
+                        ProcessBuilder processBuilder = new ProcessBuilder(fullPath);
+                        processBuilder.directory(new File(dir)); // Set working directory
+                        processBuilder.environment().putAll(System.getenv()); // Preserve environment variables
+                        Process process = processBuilder.start();
                         process.getInputStream().transferTo(System.out);
                     } else {
                         System.out.println(command + ": command not found");
                     }
+
             }
         }
     }
