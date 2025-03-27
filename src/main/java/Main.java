@@ -47,7 +47,7 @@ public class Main {
                     if (parameter.equals(builtins.get(0)) ||
                             parameter.equals(builtins.get(1)) ||
                             parameter.equals(builtins.get(2))) {
-                        System.out.println(parameter + ": is a shell builtin");
+                        System.out.println(parameter + " is a shell builtin");
                     } else {
                         String path = getPath(parameter);
                         if (path != null) {
