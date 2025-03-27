@@ -2,6 +2,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 public class Main {
     public static void main(String[] args) throws Exception {
@@ -68,20 +70,18 @@ public class Main {
                     }
                     break;
                 case "cat":
-                    for (String filename : arguments) {
-                        File file = new File(filename);
-                        if (file.exists() && file.isFile()) {
-                            try (Scanner fileScanner = new Scanner(file)) {
-                                while (fileScanner.hasNextLine()) {
-                                    System.out.println(fileScanner.nextLine());
-                                }
-                            } catch (Exception e) {
-                                System.out.println("Error reading file: " + filename);
-                            }
+                    // Fix: Concatenate file contents instead of printing line-by-line
+                    StringBuilder content = new StringBuilder();
+                    for (String fileName : arguments) {
+                        Path filePath = Path.of(fileName);
+                        if (Files.exists(filePath)) {
+                            content.append(Files.readString(filePath, StandardCharsets.UTF_8));
                         } else {
-                            System.out.println("cat: " + filename + ": No such file");
+                            System.out.println("cat: " + fileName + ": No such file or directory");
+                            return;
                         }
                     }
+                    System.out.print(content.toString()); // Print as single string
                     break;
                 default:
                     String path = getPath(command);
@@ -117,25 +117,19 @@ public class Main {
 
     private static List<String> parseInput(String input) {
         List<String> tokens = new ArrayList<>();
-        StringBuilder currentToken = new StringBuilder();
-        boolean inDoubleQuotes = false;
+        boolean inQuotes = false;
         boolean escapeNext = false;
+        StringBuilder currentToken = new StringBuilder();
 
-        for (int i = 0; i < input.length(); i++) {
-            char c = input.charAt(i);
-
+        for (char c : input.toCharArray()) {
             if (escapeNext) {
-                if (c == '\\' || c == '"' || c == '$' || c == '\n') {
-                    currentToken.append(c);
-                } else {
-                    currentToken.append('\\').append(c);
-                }
+                currentToken.append(c);
                 escapeNext = false;
             } else if (c == '\\') {
                 escapeNext = true;
             } else if (c == '"') {
-                inDoubleQuotes = !inDoubleQuotes;
-            } else if (c == ' ' && !inDoubleQuotes) {
+                inQuotes = !inQuotes;
+            } else if (c == ' ' && !inQuotes) {
                 if (currentToken.length() > 0) {
                     tokens.add(currentToken.toString());
                     currentToken.setLength(0);
