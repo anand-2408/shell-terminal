@@ -58,7 +58,20 @@ public class Main {
                     }
                     break;
                 default:
-                    System.out.println(input + ": command not found");
+                    if(!parameter.equals("")){
+                        String path = getPath(command);
+                        if(path!=null){
+                            String fullPath = path + input;
+                            Process process = Runtime.getRuntime().exec(fullPath.split(" "));
+                            process.getInputStream().transferTo(System.out);
+                        }
+                        else{
+                            System.out.println(command + ": command not found");
+                        }
+                    }
+                    else{
+                        System.out.println(input + ": command not found");
+                    }
             }
         }
     }
