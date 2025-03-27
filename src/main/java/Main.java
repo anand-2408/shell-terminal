@@ -67,21 +67,33 @@ public class Main {
                         System.out.println("cd: " + cd + ": No such file or directory");
                     }
                     break;
+                case "cat":
+                    for (String filename : arguments) {
+                        File file = new File(filename);
+                        if (file.exists() && file.isFile()) {
+                            try (Scanner fileScanner = new Scanner(file)) {
+                                while (fileScanner.hasNextLine()) {
+                                    System.out.println(fileScanner.nextLine());
+                                }
+                            } catch (Exception e) {
+                                System.out.println("Error reading file: " + filename);
+                            }
+                        } else {
+                            System.out.println("cat: " + filename + ": No such file");
+                        }
+                    }
+                    break;
                 default:
                     String path = getPath(command);
                     if (path != null) {
-                        String[] fullPath = new String[tokens.size()];
-                        fullPath[0] = command;  // Pass only the command name, not the full path
-                        System.arraycopy(arguments, 0, fullPath, 1, arguments.length);
-                        ProcessBuilder processBuilder = new ProcessBuilder(fullPath);
-                        processBuilder.directory(new File(dir)); // Set working directory
-                        processBuilder.environment().putAll(System.getenv()); // Preserve environment variables
+                        ProcessBuilder processBuilder = new ProcessBuilder(tokens);
+                        processBuilder.directory(new File(dir));
+                        processBuilder.environment().putAll(System.getenv());
                         Process process = processBuilder.start();
                         process.getInputStream().transferTo(System.out);
                     } else {
                         System.out.println(command + ": command not found");
                     }
-
             }
         }
     }
@@ -97,18 +109,30 @@ public class Main {
     }
 
     private static List<String> builtins() {
-        return Arrays.asList("exit", "echo", "type", "pwd", "cd");
+        return Arrays.asList("exit", "echo", "type", "pwd", "cd", "cat");
     }
 
     private static List<String> parseInput(String input) {
         List<String> tokens = new ArrayList<>();
-        boolean inQuotes = false;
         StringBuilder currentToken = new StringBuilder();
+        boolean inDoubleQuotes = false;
+        boolean escapeNext = false;
 
-        for (char c : input.toCharArray()) {
-            if (c == '\'') {
-                inQuotes = !inQuotes; // Toggle quote mode
-            } else if (c == ' ' && !inQuotes) {
+        for (int i = 0; i < input.length(); i++) {
+            char c = input.charAt(i);
+
+            if (escapeNext) {
+                if (c == '\\' || c == '"' || c == '$' || c == '\n') {
+                    currentToken.append(c);
+                } else {
+                    currentToken.append('\\').append(c);
+                }
+                escapeNext = false;
+            } else if (c == '\\') {
+                escapeNext = true;
+            } else if (c == '"') {
+                inDoubleQuotes = !inDoubleQuotes;
+            } else if (c == ' ' && !inDoubleQuotes) {
                 if (currentToken.length() > 0) {
                     tokens.add(currentToken.toString());
                     currentToken.setLength(0);
