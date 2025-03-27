@@ -60,7 +60,24 @@ public class Main {
             }
         }
     }
-    
+
+    private static String getPath(String parameter){
+        for(String path :System.getenv("PATH").split(":")){
+            Path fullPath = Path.og(path, parameter);
+            if(Files.isRegularFile(fullPath)){
+                return fullPath.toString();
+            }
+        }
+        return null;
+    }
+
+    private static List<String> builtins(){
+        List<String> builtins = new ArrayList<>();
+        builtins.add("exit");
+        builtins.add("echo");
+        builtins.add("type");
+        return builtins;
+    }
 
 
 }
